@@ -1,146 +1,155 @@
-# Local Development Assistant
+# MCP Beginner's Guide
 
-A powerful AI tool that runs on your local machine to assist with coding and development tasks. It's especially helpful for beginners who want to understand how MCP (Model Context Protocol) works
+This project demonstrates the Model Context Protocol (MCP) concepts in a practical way that's easy for students to understand.
 
-## What is this?
+## What is MCP (Model Context Protocol)?
 
-Local Development Assistant is a tool that helps you:
-- Create new coding projects with the right structure
-- Generate code based on your descriptions
-- Analyze your code for improvements
-- Chat with an AI assistant about coding problems
+MCP is a standardized way for applications to communicate with AI models. It defines how:
 
-All of this happens on your computer - your code stays private and secure.
+1. Applications can request AI capabilities
+2. AI models can access tools and resources
+3. Results are returned in a structured format
 
-## How it works
+Think of MCP as a bridge between your application and AI capabilities.
 
-This tool combines:
-1. A simple command-line interface
-2. Local AI capabilities (using Ollama)
-3. Project management tools
+## Key MCP Components Explained
 
-It's like having a helpful coding buddy who can create projects, write code, and answer your questions!
+### 1. MCP Host
+The component that manages communication between clients and the MCP server.
+- In this project: `mcp_server.py` with the FastAPI application
 
-## Requirements
+### 2. MCP Client
+The application that sends requests to the MCP server.
+- In this project: `cli.py` (command-line interface)
 
-- Python 3.8 or higher
-- [Ollama](https://ollama.ai/) installed and running
-- The llama3.2 model pulled in Ollama
+### 3. MCP Server
+The component that processes requests and provides AI capabilities.
+- In this project: `LocalDevAssistantMCP` class in `mcp_server.py`
 
-## Installation
+### 4. MCP Resources
+File-like data that can be read by clients.
+- In this project: File contents, project listings, analysis results
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/yourusername/local-dev-assistant.git
-   cd local-dev-assistant
+### 5. MCP Tools
+Functions that can be called by the AI model.
+- In this project: Project creation, code generation, file operations
+
+### 6. MCP Prompts
+Pre-written templates that help accomplish specific tasks.
+- In this project: System prompt, code generation prompts, analysis prompts
+
+## How MCP Works in This Project
+
+1. **Request Flow**:
+   ```
+   User → CLI (client) → MCP Server → Ollama (AI) → Response → User
    ```
 
-2. Install dependencies:
+2. **Example**: When you run `python src/cli.py generate "function to read CSV"`:
+   - CLI formats this as an MCP request with action "generate_code"
+   - MCP server receives the request
+   - Server prepares a prompt and sends it to Ollama
+   - Ollama generates code
+   - Response is formatted and returned to the user
+
+## Try It Yourself
+
+### Setup
+
+1. Install requirements:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Make sure Ollama is running with the required model:
+2. Install Ollama and the required model:
    ```bash
+   # Install Ollama from https://ollama.ai
    ollama serve
    ollama pull llama3.2
    ```
 
-## Quick Start
+### Basic MCP Commands
 
-### Create a new project
+1. **Generate Code** (MCP Tool Example):
+   ```bash
+   python src/cli.py generate "function to read CSV file" --language python
+   ```
 
-```bash
-python src/cli.py create my_project --type python
+2. **Create Project** (MCP Resource Example):
+   ```bash
+   python src/cli.py create my_project --type python
+   ```
+
+3. **Chat with AI** (MCP Prompt Example):
+   ```bash
+   python src/cli.py chat
+   ```
+
+## Project Structure
+
+```
+├── src/
+│   ├── cli.py           # MCP Client
+│   ├── mcp_server.py    # MCP Host & Server
+│   ├── file_tools.py    # File operations tools
+│   └── ollama_client.py # AI model interface
+├── workspace/           # Project workspace
+└── README.md            # This file
 ```
 
-This creates a new Python project with all the necessary files and structure.
+## Learning MCP Concepts
 
-### Generate code
-
-```bash
-python src/cli.py generate "function to read a CSV file and return a pandas dataframe" --language python
+### 1. MCP Request Structure
+```python
+# From mcp_server.py
+class MCPRequest(BaseModel):
+    """Request model for MCP operations"""
+    action: str
+    parameters: Dict[str, Any] = {}
+    context: Optional[str] = None
 ```
 
-### Chat with the assistant
-
-```bash
-python src/cli.py chat
+### 2. MCP Response Structure
+```python
+# From mcp_server.py
+class MCPResponse(BaseModel):
+    """Response model for MCP operations"""
+    success: bool
+    data: Optional[Any] = None
+    message: str = ""
+    error: Optional[str] = None
 ```
 
-This opens an interactive chat where you can ask coding questions.
-
-### Analyze your code
-
-```bash
-python src/cli.py analyze path/to/your/file.py
+### 3. MCP Tool Registration
+```python
+# From mcp_server.py
+self.tools = {
+    "create_project": self._create_project,
+    "list_projects": self._list_projects,
+    "generate_code": self._generate_code,
+    # ... more tools
+}
 ```
 
-### Check system status
+## Why MCP Matters
 
-```bash
-python src/cli.py status
-```
+MCP provides a standardized way to:
+1. Access AI capabilities in applications
+2. Give AI models access to tools and resources
+3. Structure requests and responses
+4. Maintain security through controlled access
 
-## Available Project Types
+By understanding MCP, you'll be better equipped to build applications that leverage AI capabilities in a structured, secure way.
 
-- `python`: Standard Python project with tests
-- `web`: Web application using FastAPI
-- `ml`: Machine learning project with data science tools
-- `basic`: Simple project with minimal structure
+## Next Steps
 
-## How Commands Work
+1. Explore the code to see how MCP is implemented
+2. Try modifying the tools or adding new ones
+3. Experiment with different prompts
+4. Build your own MCP client application
 
-When you run a command:
+## Resources
 
-1. The CLI processes your request
-2. It sends the request to the local MCP server
-3. The server uses Ollama to generate AI responses
-4. Results are formatted and displayed to you
-
-All processing happens on your machine - no data is sent to external services.
-
-## Troubleshooting
-
-### AI features not working?
-
-Make sure Ollama is running:
-```bash
-ollama serve
-```
-
-And that you have the required model:
-```bash
-ollama pull llama3.2
-```
-
-### Need to see what's happening?
-
-Check the system status:
-```bash
-python src/cli.py status
-```
-
-## Examples
-
-### Creating a machine learning project
-
-```bash
-python src/cli.py create customer_prediction --type ml
-```
-
-### Generating a function
-
-```bash
-python src/cli.py generate "function that validates email addresses" --language python --save email_validator.py
-```
-
-### Getting project suggestions
-
-```bash
-python src/cli.py suggest my_project
-```
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+- [MCP Documentation](https://github.com/microsoft/mcp)
+- [FastAPI Documentation](https://fastapi.tiangolo.com/)
+- [Ollama](https://ollama.ai/)
