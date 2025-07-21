@@ -1,6 +1,6 @@
 # Local Development Assistant
 
-A powerful AI-powered tool to help with your coding and development tasks, right on your local machine.
+A powerful AI tool that runs on your local machine to assist with coding and development tasks. It's especially helpful for beginners who want to understand how MCP (Model Context Protocol) works
 
 ## What is this?
 
